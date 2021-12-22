@@ -22,6 +22,7 @@ export const taskTodo = () => {
 
 export const createTask = (task) => {
     const newTask = {
+        id: listTask[listTask.length -1].id + 1,
         taskName: task,
         status: 'undone'
     }
@@ -45,13 +46,41 @@ export const deleteAll = () => {
     }
 }
 
-export const deleteDone = () => {
-    const taskUndone = listTask.filter(elt => elt.status !== 'done')
-    listTask = [...taskUndone]
+export const deleteTask = (eltDelete) => {
+    console.log(eltDelete)
+    const delTask= listTask.filter((elt) =>  elt.id !== eltDelete.id)
+    listTask = [...delTask]
+    console.log(listTask)
+    return function(dispatch){
+        dispatch({
+            type: 'DELETE_TASK',
+            payload: listTask            
+        })
+    }
+}
+
+export const deleteDone = () => {    
     return function(dispatch){
         dispatch({
             type: 'DELETE_DONE',
             payload: listTask
+        })
+    }
+}
+
+export const modifyTask = (task) => {
+    return function (dispatch){
+        dispatch({
+            type: 'MODIFY_TASK',
+            payload: task.id        
+        })
+    }
+}
+export const modifyValue = (newElt) => {
+    return function (dispatch){
+        dispatch({
+            type: 'MODIFY_VALUE',
+            payload: newElt      
         })
     }
 }

@@ -1,6 +1,6 @@
 import React, {Component as ReactComponent} from 'react'
 import { connect } from 'react-redux'
-import { taskTodo, createTask, deleteAll, deleteDone } from '../action/todoList'
+import { taskTodo, createTask, deleteAll, deleteDone, deleteTask, modifyTask, modifyValue } from '../action/todoList'
 import TasksDone from '../component/TasksDone'
 
 class List extends ReactComponent {
@@ -9,10 +9,10 @@ class List extends ReactComponent {
 
         this.state ={
             listTodo: [],
-            newValue: ''
+            newValue: '',
+            modifyValue:''
         }
         
-        console.log(props.tasksTodo)
     }
 
     componentDidMount(){
@@ -20,11 +20,17 @@ class List extends ReactComponent {
     }
 
     componentDidUpdate(prevProps){
-        if (this.props.tasksTodo!== prevProps.tasksTodo){
+        if (this.props.tasksTodo !== prevProps.tasksTodo){
             console.log(this.props.tasksTodo)
             this.setState({listTodo: [...this.props.tasksTodo]})
         }
 
+    }
+
+    handleChangeTask(e){
+        e.preventDefault()
+        console.log(e.target.value)
+        return this.setState({modifyValue: e.target.value})
     }
 
     handleChange(e){
@@ -33,47 +39,62 @@ class List extends ReactComponent {
         
     }
 
-    handleClick(e){
+    handleClick(e){ //add a new task
         e.preventDefault()
         this.props.createTask(this.state.newValue)
-        console.log(this.props.tasksTodo)
-        return this.setState({newValue: ''})
+        this.setState({newValue: ''})
+        return e.target.value = ''
         
     }
-    handleClickDone (e){
+    handleClickDone (e){ //dsiplay tasks done
         e.preventDefault()        
         const doneElement = this.props.tasksTodo.filter((elt) => elt.status ==='done')
         this.setState({listTodo: doneElement})
 
     }
-    handleClickUndone (e){
+    handleClickUndone (e){ //display tasks undone
         e.preventDefault()        
         const undoneElement = this.props.tasksTodo.filter((elt) => elt.status ==='undone')
         this.setState({listTodo: undoneElement})
 
     }
-    handleClickAll (e){
+    handleClickAll (e){ //dsiplay all tasks
         console.log(this.props.tasksTodo)
         e.preventDefault()                
         this.setState({listTodo: [...this.props.tasksTodo]})
         console.log(this.state.listTodo)
     }
-    handleClickDeleteDone (e){
+    handleClickDeleteDone (e){ //delete tasks done
         e.preventDefault()
         this.props.deleteDone()
     }
-    handleClickDeleteAll(e){
+    handleClickDeleteAll(e){ //delete all tasks
         e.preventDefault()
         this.props.deleteAll()
     }
+
+    handleClickModifTask(e, id){ //modify Tasks
+        e.preventDefault()
+        console.log("newValue: ", this.recupNewTask())
+        this.props.modifyValue({id: id, newValue: this.state.modifyValue})
+        this.setState({modifyValue: ''})
+        console.log('modifvalue: ', this.recupNewTask())
+        return e.target.value = ''
+    }
+
+    recupNewTask(){
+        return this.state.modifyValue
+    }
+
     render (){                    
         return (
-            <div>
+            <div id="main">
                 <div>
                     <h3>TodoInput</h3>
                     <div>
-                        <input onChange = {(e) => this.handleChange(e)} className="new-todo" type="text" placeholder="New Todo"/>
-                        <button onClick = {(e) => this.handleClick(e)}>Add New Task</button>
+                        <input value = {this.state.newValue} onChange = {(e) => this.handleChange(e)} className="new-todo" type="text" placeholder="New Todo"/>
+                        <br/>
+                        <button className="btn-Add" onClick = {(e) => this.handleClick(e)}>Add New Task</button>
                     </div>
                 </div>
                 <div>
@@ -83,9 +104,10 @@ class List extends ReactComponent {
                         <button onClick = {(e) => this.handleClickDone(e)}>Done</button>
                         <button onClick = {(e) => this.handleClickUndone(e)}>Todo</button>
                     </div>
+                    <input value = {this.state.modifyValue}type="text" placeholder='Modifier une tâche' onChange={e => this.handleChangeTask(e)}></input>
                     <div>
                         {
-                            this.state.listTodo && this.state.listTodo.length > 0  ? this.state.listTodo.map((elt, index) => <TasksDone task = {elt} key = {index}/>) : 'Aucun élément à afficher'                            
+                            this.state.listTodo && this.state.listTodo.length > 0  ? this.state.listTodo.map((elt, index) => <TasksDone task = {elt} key = {index} delElt = {(elt) => this.props.deleteTask(elt)} modifElt = {(id) => this.props.modifyTask(id)} modifTask = {(e, id) => this.handleClickModifTask(e, id)} />) : 'Aucun élément à afficher'                            
                         }
                         
                     </div>
@@ -101,14 +123,17 @@ class List extends ReactComponent {
 }
 
 const mapStateToProps = (state, ownprops) => ({
-    tasksTodo: state.tasksTodo
+    tasksTodo: state.tasksTodo    
 })
 
 const mapDispatchToProps = {
     taskTodo,
     createTask,
     deleteAll,
-    deleteDone
+    deleteDone,
+    deleteTask,
+    modifyTask,
+    modifyValue
 }
 
 export default connect (mapStateToProps, mapDispatchToProps)(List)

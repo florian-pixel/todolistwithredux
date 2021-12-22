@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  margin-left: 27%;
+  margin-right: 27%;
+  margin-top: 5%;
 }
 
 .App-logo {
@@ -35,4 +38,35 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+#main{
+  justify-content: center;
+  border: black 2px solid;
+  background-color: #61dafb;
+  padding: 10px 25px 100px 25px;
+}
+
+.task{
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 1px gray solid;
+  padding-left: 20px;
+  justify-content: space-between;
+}
+
+.btn-Add{
+  width: 100%;
+}
+
+.new-todo{
+  width: 100%;
+}
+
+.btn-supp{
+  width: 14px;
+}
+.btn-modif{
+  width: 14px;
 }
